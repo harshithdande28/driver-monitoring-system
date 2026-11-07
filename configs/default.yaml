@@ -15,6 +15,33 @@ data:
   test_fraction: 0.15       # fraction of DRIVERS held out for testing
   split_search_trials: 2000 # random driver splits tried; the most class-balanced one is kept
 
+train:
+  image_size: 224
+  batch_size: 64
+  num_workers: 2            # Colab free tier has 2 CPU cores
+  label_smoothing: 0.1
+  weight_decay: 0.01        # AdamW
+  early_stopping_patience: 3
+  smoke_fraction: 0.01      # share of data used by the smoke test
+  models:
+    baseline:               # small CNN from scratch — the reference number
+      pretrained: false
+      head_epochs: 0
+      finetune_epochs: 15
+      lr_finetune: 0.001
+    efficientnet_b0:        # main model
+      pretrained: true
+      head_epochs: 2        # phase 1: backbone frozen, train the classifier head
+      finetune_epochs: 10   # phase 2: everything unfrozen
+      lr_head: 0.001
+      lr_finetune: 0.0003
+    mobilenet_v3_large:     # lightweight model for the laptop / edge
+      pretrained: true
+      head_epochs: 2
+      finetune_epochs: 10
+      lr_head: 0.001
+      lr_finetune: 0.0003
+
 classes:
   c0: safe driving
   c1: texting - right
