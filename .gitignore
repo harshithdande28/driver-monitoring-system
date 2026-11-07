@@ -219,8 +219,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-models/
-data/
-mlruns/
-checkpoints/
+/models/
+/data/
+/mlruns/
+/checkpoints/
 *.onnx
