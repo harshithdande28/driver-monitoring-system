@@ -1,0 +1,28 @@
+# Central configuration for the Driver Monitoring System.
+# Every notebook and script reads from here, so a value is only changed in one place.
+
+seed: 42
+
+paths:
+  drive_root: /content/drive/MyDrive/driver-monitoring   # permanent storage (Google Drive)
+  local_data: /content/data/statefarm                     # fast local disk in Colab
+  splits_file: /content/drive/MyDrive/driver-monitoring/data/splits.csv
+
+data:
+  kaggle_competition: state-farm-distracted-driver-detection
+  zip_name: state-farm-distracted-driver-detection.zip
+  val_fraction: 0.15        # fraction of DRIVERS (not images) held out for validation
+  test_fraction: 0.15       # fraction of DRIVERS held out for testing
+  split_search_trials: 2000 # random driver splits tried; the most class-balanced one is kept
+
+classes:
+  c0: safe driving
+  c1: texting - right
+  c2: talking on the phone - right
+  c3: texting - left
+  c4: talking on the phone - left
+  c5: operating the radio
+  c6: drinking
+  c7: reaching behind
+  c8: hair and makeup
+  c9: talking to passenger

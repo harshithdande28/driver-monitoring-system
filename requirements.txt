@@ -1,0 +1,8 @@
+# Colab dependencies.
+#
+# Colab ALREADY provides torch, torchvision, numpy, pandas, matplotlib,
+# scikit-learn, Pillow and PyYAML. Do NOT add or reinstall them here —
+# reinstalling torch is the most common way to break a Colab runtime.
+
+mlflow>=2.10
+pytest>=8.0
