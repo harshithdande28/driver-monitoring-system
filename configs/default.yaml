@@ -42,6 +42,27 @@ train:
       lr_head: 0.001
       lr_finetune: 0.0003
 
+drowsiness:
+  calibration_seconds: 15     # sit normally, eyes open, looking at the road
+  eye_closed_ratio: 0.70      # eyes "closed" when EAR < 70% of your own open-eye EAR
+  microsleep_seconds: 1.5     # continuous closure that counts as a microsleep (critical)
+  perclos_window_seconds: 60  # rolling window for PERCLOS
+  perclos_min_seconds: 10     # need this much data before PERCLOS is trusted
+  perclos_drowsy: 0.15        # eyes closed >15% of the time -> drowsy
+  yawn_mar_min: 0.50          # mouth-open threshold is max(this, baseline + yawn_mar_margin)
+  yawn_mar_margin: 0.35
+  yawn_min_seconds: 1.0       # longer than talking
+  yawn_window_seconds: 180
+  yawns_drowsy: 3             # yawns within the window -> drowsy
+  look_away_yaw_deg: 25       # head turned left/right beyond your baseline
+  look_away_pitch_deg: 20     # head tilted up/down beyond your baseline
+  look_away_seconds: 2.0      # sustained -> distracted (eyes off road)
+  nod_pitch_deg: 15
+  nod_min_seconds: 0.2
+  nod_max_seconds: 1.5
+  nod_window_seconds: 60
+  nods_drowsy: 2
+
 classes:
   c0: safe driving
   c1: texting - right

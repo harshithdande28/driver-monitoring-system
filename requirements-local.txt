@@ -1,8 +1,9 @@
-# Laptop (local) dependencies — Phase 1: webcam + MediaPipe check.
-# More packages (onnxruntime, pyttsx3, fastapi, ...) get added in later steps.
+# Laptop (local) dependencies.
 #
 # NOTE: do NOT add "opencv-python" here. MediaPipe already installs
 # "opencv-contrib-python", and having both installed causes import conflicts.
 
 mediapipe>=0.10.14
 numpy
+pyyaml
+pytest
