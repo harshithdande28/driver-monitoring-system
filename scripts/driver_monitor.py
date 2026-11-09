@@ -46,8 +46,18 @@ def _text(img, txt, org, color=WHITE, scale=0.55, thick=1):
 
 
 def find_model(cfg_mon: dict) -> Path | None:
-    for candidate in (REPO / cfg_mon["model_file"], REPO / "models" / "distraction_int8.onnx",
-                      REPO / "models" / "distraction_fp32.onnx"):
+    """Prefer the model chosen by the export notebook (model_meta.json -> deploy_file)."""
+    import json
+
+    candidates = []
+    meta = REPO / "models" / "model_meta.json"
+    if meta.exists():
+        deploy = json.loads(meta.read_text()).get("deploy_file")
+        if deploy:
+            candidates.append(REPO / "models" / deploy)
+    candidates += [REPO / cfg_mon["model_file"], REPO / "models" / "distraction_fp32.onnx",
+                   REPO / "models" / "distraction_int8.onnx"]
+    for candidate in candidates:
         if candidate.exists() and (candidate.parent / "model_meta.json").exists():
             return candidate
     return None

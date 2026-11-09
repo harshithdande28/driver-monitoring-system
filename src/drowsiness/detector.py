@@ -11,9 +11,11 @@ Phases
 
 Signals
   eyes_closed   EAR < eye_closed_ratio * baseline EAR (ignored while looking away,
-                because EAR is unreliable when the head is turned)
+                because EAR is unreliable when the head is turned, and during
+                yawns, because the eyes naturally squint)
   microsleep    eyes closed continuously >= microsleep_seconds        -> CRITICAL
-  PERCLOS       % of time eyes closed over a rolling window            -> DROWSY
+  PERCLOS       % of time in SLOW eye closures (>= 0.4 s, so normal blinks
+                don't count) over a rolling window                     -> DROWSY
   yawns         mouth open beyond threshold for >= yawn_min_seconds    -> DROWSY (count)
   nods          short pitch excursions (head drops and comes back)     -> DROWSY (count)
   looking_away  head turned / face lost for >= look_away_seconds       -> DISTRACTED
@@ -38,6 +40,7 @@ class DrowsinessConfig:
     perclos_window_seconds: float = 60.0
     perclos_min_seconds: float = 10.0
     perclos_drowsy: float = 0.15
+    perclos_min_closure_seconds: float = 0.4
     yawn_mar_min: float = 0.50
     yawn_mar_margin: float = 0.35
     yawn_min_seconds: float = 1.0
@@ -115,7 +118,7 @@ class DrowsinessDetector:
         self.baseline: Baseline | None = None
         self._calib: list[FaceMeasurements] = []
         self._calib_start: float | None = None
-        self._closed_hist: deque[tuple[float, bool]] = deque()
+        self._closed_hist: deque[list] = deque()   # [timestamp, counts_as_closed]
         self._yawn_times: deque[float] = deque()
         self._nod_times: deque[float] = deque()
         self._closed = _Episode()
@@ -176,21 +179,34 @@ class DrowsinessDetector:
         s.away_seconds, _ = self._away.update(head_away, t)
         s.looking_away = s.away_seconds >= c.look_away_seconds
 
-        # --- eyes (only trusted when the face is visible and roughly frontal) ---
-        eyes_valid = m is not None and not head_away
+        # --- mouth wide open (yawn candidate) ---
+        yawn_thr = max(c.yawn_mar_min, b.mar + c.yawn_mar_margin)
+        mouth_open = m is not None and m.mar > yawn_thr
+
+        # --- eyes: only trusted when the face is visible, roughly frontal, and not
+        #     mid-yawn (eyes naturally squint during a yawn) ---
+        eyes_valid = m is not None and not head_away and not mouth_open
         s.eyes_closed = eyes_valid and m.ear < c.eye_closed_ratio * b.ear
         s.eyes_closed_seconds, _ = self._closed.update(s.eyes_closed, t)
         s.microsleep = s.eyes_closed_seconds >= c.microsleep_seconds
+
+        # PERCLOS counts only SLOW closures (>= perclos_min_closure_seconds); ordinary
+        # blinks (~0.1–0.4 s) are ignored. Once a closure qualifies, its earlier frames
+        # are back-filled as closed so the full closure duration counts.
         if eyes_valid:
-            self._closed_hist.append((t, s.eyes_closed))
+            qualifies = s.eyes_closed and s.eyes_closed_seconds >= c.perclos_min_closure_seconds
+            self._closed_hist.append([t, qualifies])
+            if qualifies and self._closed.start is not None:
+                for entry in reversed(self._closed_hist):
+                    if entry[0] < self._closed.start:
+                        break
+                    entry[1] = True
         while self._closed_hist and t - self._closed_hist[0][0] > c.perclos_window_seconds:
             self._closed_hist.popleft()
         if self._closed_hist and t - self._closed_hist[0][0] >= c.perclos_min_seconds:
             s.perclos = float(np.mean([closed for _, closed in self._closed_hist]))
 
         # --- yawns: counted once per episode, when it has lasted long enough ---
-        yawn_thr = max(c.yawn_mar_min, b.mar + c.yawn_mar_margin)
-        mouth_open = m is not None and m.mar > yawn_thr
         yawn_dur, _ = self._yawn.update(mouth_open, t)
         s.yawning = yawn_dur >= c.yawn_min_seconds
         if s.yawning and not self._yawn_counted:

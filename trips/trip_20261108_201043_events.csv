@@ -1,0 +1,24 @@
+t_seconds,kind,detail
+0.00,state_change,START -> ATTENTIVE
+14.20,state_change,ATTENTIVE -> CRITICAL (eyes closed 1.5s (microsleep))
+14.20,microsleep,
+14.20,alert,alarm_start
+15.73,state_change,CRITICAL -> DROWSY (PERCLOS 19%)
+15.73,alert,beep
+15.73,alert,speak:You seem tired. Please take a break.
+20.53,state_change,DROWSY -> ATTENTIVE
+29.06,state_change,ATTENTIVE -> DROWSY (PERCLOS 15%)
+29.06,alert,beep
+29.33,state_change,DROWSY -> CRITICAL (eyes closed 1.5s (microsleep); PERCLOS 16%)
+29.33,microsleep,
+29.33,alert,alarm_start
+29.99,state_change,CRITICAL -> DROWSY (PERCLOS 18%)
+29.99,alert,beep
+34.99,alert,beep
+36.32,state_change,DROWSY -> ATTENTIVE
+42.39,state_change,ATTENTIVE -> DISTRACTED (eyes off road 2.0s)
+42.39,alert,chime
+43.39,state_change,DISTRACTED -> ATTENTIVE
+47.25,state_change,ATTENTIVE -> DISTRACTED (eyes off road 2.0s)
+47.25,alert,chime
+50.92,state_change,DISTRACTED -> ATTENTIVE

@@ -49,6 +49,7 @@ drowsiness:
   perclos_window_seconds: 60  # rolling window for PERCLOS
   perclos_min_seconds: 10     # need this much data before PERCLOS is trusted
   perclos_drowsy: 0.15        # eyes closed >15% of the time -> drowsy
+  perclos_min_closure_seconds: 0.4   # closures shorter than this are normal blinks (ignored)
   yawn_mar_min: 0.50          # mouth-open threshold is max(this, baseline + yawn_mar_margin)
   yawn_mar_margin: 0.35
   yawn_min_seconds: 1.0       # longer than talking
@@ -64,7 +65,7 @@ drowsiness:
   nods_drowsy: 2
 
 monitor:
-  model_file: models/distraction_fp32.onnx   # falls back to distraction_fp32.onnx if missing
+  model_file: models/distraction_fp32.onnx   # model_meta.json deploy_file takes priority
   classify_every_n_frames: 2   # run the classifier on every 2nd frame (face tracking runs on all)
   smoothing_seconds: 1.0       # average classifier probabilities over this window
   distraction_threshold: 0.70  # smoothed P(distracted) needed (probabilities are calibrated)

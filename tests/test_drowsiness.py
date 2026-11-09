@@ -116,3 +116,23 @@ def test_face_lost_counts_as_looking_away(det):
 def test_head_nods(det):
     state, _ = _run(det, [(OPEN, 2), (NODDED, 0.5), (OPEN, 2), (NODDED, 0.5), (OPEN, 2)])
     assert state.nods_in_window == 2 and state.level == "drowsy"
+
+
+def test_frequent_normal_blinks_are_not_drowsy(det):
+    # screen-tired eyes: a 0.2 s blink every second for 20 s (20% of frames closed)
+    state, _ = _run(det, [(OPEN, 0.8), (CLOSED, 0.2)] * 20)
+    assert state.perclos == pytest.approx(0.0)
+    assert state.level == "alert"
+
+
+def test_slow_closures_count_fully_in_perclos(det):
+    # 1.0 s closures every 4 s = 25% closed; all of each closure counts once it passes 0.4 s
+    state, _ = _run(det, [(OPEN, 3.0), (CLOSED, 1.0)] * 5)
+    assert state.perclos == pytest.approx(0.25, abs=0.03)
+
+
+def test_squinting_during_yawn_is_ignored(det):
+    yawn_squint = FaceMeasurements(ear=0.12, mar=0.80, yaw=0.0, pitch=0.0, roll=0.0)
+    state, _ = _run(det, [(OPEN, 2), (yawn_squint, 3), (OPEN, 1)])
+    assert state.yawns_in_window == 1
+    assert not state.microsleep and state.level == "alert"

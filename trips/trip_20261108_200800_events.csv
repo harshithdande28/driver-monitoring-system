@@ -1,0 +1,40 @@
+t_seconds,kind,detail
+0.00,state_change,START -> ATTENTIVE
+13.66,state_change,ATTENTIVE -> DROWSY (PERCLOS 15%)
+13.66,alert,beep
+13.66,alert,speak:You seem tired. Please take a break.
+13.73,state_change,DROWSY -> CRITICAL (eyes closed 1.5s (microsleep); PERCLOS 16%)
+13.73,microsleep,
+13.73,alert,alarm_start
+15.27,state_change,CRITICAL -> DROWSY (PERCLOS 24%)
+15.27,alert,beep
+20.32,alert,beep
+24.85,yawn,
+25.33,alert,beep
+27.46,state_change,DROWSY -> CRITICAL (eyes closed 1.5s (microsleep); PERCLOS 25%)
+27.46,microsleep,
+27.46,alert,alarm_start
+27.86,state_change,CRITICAL -> DROWSY (PERCLOS 26%)
+27.86,alert,beep
+32.94,alert,beep
+33.79,yawn,
+36.66,yawn,
+37.98,alert,beep
+43.00,alert,beep
+43.12,state_change,DROWSY -> CRITICAL (eyes off road 2.1s; PERCLOS 22%; 3 yawns; 2 head nods)
+43.12,alert,alarm_start
+43.79,state_change,CRITICAL -> DROWSY (PERCLOS 22%; 3 yawns; 2 head nods)
+43.79,alert,beep
+43.79,alert,speak:You seem tired. Please take a break.
+47.92,state_change,DROWSY -> CRITICAL (eyes off road 2.1s; PERCLOS 21%; 3 yawns; 2 head nods)
+47.92,alert,alarm_start
+49.31,state_change,CRITICAL -> DROWSY (PERCLOS 21%; 3 yawns; 2 head nods)
+49.31,alert,beep
+54.32,alert,beep
+59.38,alert,beep
+64.06,state_change,DROWSY -> CRITICAL (eyes off road 2.0s; PERCLOS 20%; 3 yawns; 3 head nods)
+64.06,alert,alarm_start
+65.65,state_change,CRITICAL -> DROWSY (PERCLOS 21%; 3 yawns; 3 head nods)
+65.65,alert,beep
+70.66,alert,beep
+73.84,alert,speak:You seem tired. Please take a break.

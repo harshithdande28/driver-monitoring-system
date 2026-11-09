@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-08T20:08:00",
+  "duration_seconds": 75.6,
+  "time_in_state_seconds": {
+    "ATTENTIVE": 13.7,
+    "DISTRACTED": 0.0,
+    "DROWSY": 56.3,
+    "CRITICAL": 5.6
+  },
+  "percent_attentive": 18.1,
+  "distraction_episodes": 0,
+  "drowsy_episodes": 6,
+  "critical_episodes": 5,
+  "yawns": 3,
+  "microsleeps": 2,
+  "alerts": 22
+}
