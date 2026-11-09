@@ -1,0 +1,10 @@
+# API service dependencies (used by the Dockerfile; also installable in the laptop .venv).
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+onnxruntime>=1.17
+mediapipe>=0.10.14
+numpy
+pillow
+pyyaml
+httpx            # for the API tests (fastapi.testclient)

@@ -39,12 +39,15 @@ def open_camera(index: int = 0):
 class FaceTracker:
     """Runs MediaPipe on video frames and returns landmarks + measurements."""
 
-    def __init__(self, model_path: Path | None = None):
+    def __init__(self, model_path: Path | None = None, video: bool = True):
+        """video=True for webcam streams; video=False for independent images (the API)."""
         import mediapipe as mp
 
+        self.video = video
+        mode = mp.tasks.vision.RunningMode.VIDEO if video else mp.tasks.vision.RunningMode.IMAGE
         options = mp.tasks.vision.FaceLandmarkerOptions(
             base_options=mp.tasks.BaseOptions(model_asset_path=str(model_path or ensure_face_model())),
-            running_mode=mp.tasks.vision.RunningMode.VIDEO,
+            running_mode=mode,
             num_faces=1,
             output_facial_transformation_matrixes=True,   # gives head pose directly
         )
@@ -52,13 +55,17 @@ class FaceTracker:
         self._landmarker = mp.tasks.vision.FaceLandmarker.create_from_options(options)
         self._last_ts = -1
 
-    def process(self, frame_rgb: np.ndarray, timestamp_ms: int
+    def process(self, frame_rgb: np.ndarray, timestamp_ms: int = 0
                 ) -> tuple[np.ndarray | None, FaceMeasurements | None]:
         """frame_rgb: HxWx3 RGB uint8. Returns (landmarks in pixels, measurements) or (None, None)."""
-        timestamp_ms = max(timestamp_ms, self._last_ts + 1)   # MediaPipe needs increasing timestamps
-        self._last_ts = timestamp_ms
-        image = self._mp.Image(image_format=self._mp.ImageFormat.SRGB, data=frame_rgb)
-        result = self._landmarker.detect_for_video(image, timestamp_ms)
+        image = self._mp.Image(image_format=self._mp.ImageFormat.SRGB,
+                               data=np.ascontiguousarray(frame_rgb))
+        if self.video:
+            timestamp_ms = max(timestamp_ms, self._last_ts + 1)   # must strictly increase
+            self._last_ts = timestamp_ms
+            result = self._landmarker.detect_for_video(image, timestamp_ms)
+        else:
+            result = self._landmarker.detect(image)
         if not result.face_landmarks:
             return None, None
         h, w = frame_rgb.shape[:2]
