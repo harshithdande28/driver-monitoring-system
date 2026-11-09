@@ -6,4 +6,7 @@
 mediapipe>=0.10.14
 numpy
 pyyaml
+pillow
+onnxruntime
+pyttsx3
 pytest

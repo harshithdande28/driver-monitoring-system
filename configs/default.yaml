@@ -63,6 +63,19 @@ drowsiness:
   nod_window_seconds: 60
   nods_drowsy: 2
 
+monitor:
+  model_file: models/distraction_int8.onnx   # falls back to distraction_fp32.onnx if missing
+  classify_every_n_frames: 2   # run the classifier on every 2nd frame (face tracking runs on all)
+  smoothing_seconds: 1.0       # average classifier probabilities over this window
+  distraction_threshold: 0.70  # smoothed P(distracted) needed (probabilities are calibrated)
+  distraction_seconds: 2.0     # ...for this long before the driver counts as distracted
+  # sound alerts
+  distracted_repeat_seconds: 4.0   # soft chime repeats while distracted
+  drowsy_beep_seconds: 5.0         # beep repeats while drowsy
+  drowsy_speech_seconds: 30.0      # spoken warning at most this often
+  drowsy_message: "You seem tired. Please take a break."
+  trips_dir: trips
+
 classes:
   c0: safe driving
   c1: texting - right
